@@ -14,7 +14,49 @@ public class Registro {
     //hay que agrupar todos los registros del mismo dominio en un arrraylist, quiero decir si en el diccionario hubieran tres registros del mismo dominio pero de diferente tipo
     //en el diccionario meterías el arrayList
     //En la fase 1 solo se considera tipo A pero hay que dejarlo preparado ya para las soguientes fases.
-        private String  clave;
-        private List<String> registros;
+        private String dominio;
+        private String  tipo;
+        private String  nombre;
 
+    public Registro(String dominio, String tipo, String nombre) {
+        this.dominio = dominio;
+        this.tipo = tipo;
+        this.nombre = nombre;
+    }
+
+    public Registro() {
+    }
+
+    public String getDominio() {
+        return dominio;
+    }
+
+    public void setDominio(String dominio) {
+        this.dominio = dominio;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return "Registro{" +
+                "dominio='" + dominio + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", nombre='" + nombre + '\'' +
+                '}';
+    }
 }
