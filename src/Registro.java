@@ -14,17 +14,17 @@ public class Registro {
     //hay que agrupar todos los registros del mismo dominio en un arrraylist, quiero decir si en el diccionario hubieran tres registros del mismo dominio pero de diferente tipo
     //en el diccionario meterías el arrayList
     //En la fase 1 solo se considera tipo A pero hay que dejarlo preparado ya para las soguientes fases.
-        private String dominio;
-        private String  tipo;
-        private String  nombre;
-
-    public Registro(String dominio, String tipo, String nombre) {
-        this.dominio = dominio;
-        this.tipo = tipo;
-        this.nombre = nombre;
-    }
+    private String dominio;
+    private String tipo;
+    private String ip;
 
     public Registro() {
+    }
+
+    public Registro(String dominio, String tipo, String ip) {
+        this.dominio = dominio;
+        this.tipo = tipo;
+        this.ip = ip;
     }
 
     public String getDominio() {
@@ -43,12 +43,12 @@ public class Registro {
         this.tipo = tipo;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getIp() {
+        return ip;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Registro {
         return "Registro{" +
                 "dominio='" + dominio + '\'' +
                 ", tipo='" + tipo + '\'' +
-                ", nombre='" + nombre + '\'' +
+                ", ip='" + ip + '\'' +
                 '}';
     }
 }
