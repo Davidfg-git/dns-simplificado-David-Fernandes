@@ -55,6 +55,16 @@ public class ServidorDNS {
                             break;
                         }
 
+                        if (peticion.equalsIgnoreCase("LIST")){
+                            salida.println("150 Inicio de listado");
+                            diccionario.forEach((s, registros) ->{
+                                registros.forEach(registro -> salida.println(registro));
+                            } );
+                            salida.println("226 Fin listado");
+
+                            continue;
+                        }
+
                         // Expresion regular para validar el formato
                         String regex = "^LOOKUP\\s+(A|CNAME|MX)\\s+([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$";
 

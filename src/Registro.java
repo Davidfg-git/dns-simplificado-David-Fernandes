@@ -53,10 +53,6 @@ public class Registro {
 
     @Override
     public String toString() {
-        return "Registro{" +
-                "dominio='" + dominio + '\'' +
-                ", tipo='" + tipo + '\'' +
-                ", ip='" + ip + '\'' +
-                '}';
+        return dominio + " " + tipo + " " + ip;
     }
 }
