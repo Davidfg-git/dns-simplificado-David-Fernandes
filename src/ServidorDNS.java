@@ -75,6 +75,12 @@ public class ServidorDNS {
                             String tipo = partes[1];
                             String dominio = partes[2];
 
+
+                            if (!diccionario.containsKey(dominio)){
+                                salida.println("404 Not Found");
+                                continue;
+                            }
+
                             boolean encontrado = false;
                             for (Registro r : diccionario.get(dominio)) {
                                 if (r.getTipo().equalsIgnoreCase(tipo)) {
