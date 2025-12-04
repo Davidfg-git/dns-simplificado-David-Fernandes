@@ -26,6 +26,7 @@ public class ServidorDNS {
                     }
                 }
             }
+
         } catch (FileNotFoundException e) {
             System.out.println("Error: Archivo no encontrado");
 
@@ -55,11 +56,12 @@ public class ServidorDNS {
                             break;
                         }
 
-                        if (peticion.equalsIgnoreCase("LIST")){
+                        if (peticion.equalsIgnoreCase("LIST")) {
                             salida.println("150 Inicio de listado");
-                            diccionario.forEach((s, registros) ->{
+                            diccionario.forEach((s, registros) -> {
                                 registros.forEach(registro -> salida.println(registro));
-                            } );
+                                salida.println("--------------------------------------------");
+                            });
                             salida.println("226 Fin listado");
 
                             continue;
@@ -73,21 +75,15 @@ public class ServidorDNS {
                             String tipo = partes[1];
                             String dominio = partes[2];
 
-                            List<Registro> registros = diccionario.get(dominio);
-
-                            if (registros != null && !registros.isEmpty()) {
-                                // buscar un registro que coincida con el tipo
-                                Registro encontrado = registros.stream()
-                                        .filter(r -> r.getTipo().equalsIgnoreCase(tipo))
-                                        .findFirst()
-                                        .orElse(null);
-
-                                if (encontrado != null) {
-                                    salida.println("200 " + encontrado.getIp());
-                                } else {
-                                    salida.println("404 Not Found");
+                            boolean encontrado = false;
+                            for (Registro r : diccionario.get(dominio)) {
+                                if (r.getTipo().equalsIgnoreCase(tipo)) {
+                                    salida.println("200 " + r.getIp());
+                                    encontrado = true;
                                 }
-                            } else {
+                            }
+
+                            if (!encontrado) {
                                 salida.println("404 Not Found");
                             }
 
