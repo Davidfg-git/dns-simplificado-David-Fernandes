@@ -9,9 +9,9 @@ public class ServidorDNS {
     public static void main(String[] args) throws IOException {
 
         HashMap<String, List<Registro>> diccionario = new HashMap<>();
+        File archivoDirecciones = new File("src/direcciones.txt");
 
         try {
-            File archivoDirecciones = new File("src/direcciones.txt");
             BufferedReader br = new BufferedReader(new FileReader(archivoDirecciones));
             String line;
             while ((line = br.readLine()) != null) {
@@ -70,6 +70,8 @@ public class ServidorDNS {
                         // Expresion regular para validar el formato
                         String regex = "^LOOKUP\\s+(A|CNAME|MX)\\s+([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$";
 
+                        String regexAnadir = "^REGISTER\\s+([a-zA-Z0-9.-]+)\\s+(A|CNAME|MX)\\s+(\\S+)$";
+
                         if (peticion.matches(regex)) {
                             String[] partes = peticion.split("\\s+");
                             String tipo = partes[1];
@@ -93,7 +95,26 @@ public class ServidorDNS {
                                 salida.println("404 Not Found");
                             }
 
-                        } else {
+                        } else if (peticion.matches(regexAnadir)){
+                            String[] partes = peticion.split("\\s+",2);
+
+                           try(BufferedWriter bf = new BufferedWriter(new FileWriter(archivoDirecciones,true))){
+                               bf.write(System.lineSeparator() + partes[1]);
+                           }
+
+                           String[] solicitud = partes[1].split("\\s+");
+                           Registro registro = new Registro(solicitud[0],solicitud[1],solicitud[2]);
+
+                            if (!diccionario.containsKey(partes[0])) {
+                                diccionario.put(partes[0], new ArrayList<>());
+                                diccionario.get(partes[0]).add(registro);
+                                salida.println("200 record added");
+                            }else {
+                                diccionario.get(partes[0]).add(registro);
+                                salida.println("200 record added");
+                            }
+
+                        }else{
                             salida.println("400 Bad Request");
                         }
 
