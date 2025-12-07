@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class runnableCliente implements Runnable{
+public class runnableCliente implements Runnable {
 
     private Socket socketCliente;
     private HashMap<String, List<Registro>> diccionario;
     private File archivoDirecciones;
 
+    // Recibimos los datos necesarios para manejar correctamente.
     public runnableCliente(Socket socketCliente, HashMap<String, List<Registro>> diccionario, File archivoDirecciones) {
         this.socketCliente = socketCliente;
         this.diccionario = diccionario;
@@ -49,9 +50,10 @@ public class runnableCliente implements Runnable{
                         continue;
                     }
 
-                    // Expresion regular para validar el formato
+                    // Expresion regular para validar el formato del comando LOOKUP
                     String regex = "^LOOKUP\\s+(A|CNAME|MX)\\s+([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$";
 
+                    // Expresion regular para validar el formato del comando REGISTER
                     String regexAnadir = "^REGISTER\\s+([a-zA-Z0-9.-]+)\\s+(A|CNAME|MX)\\s+(\\S+)$";
 
                     if (peticion.matches(regex)) {
@@ -65,6 +67,7 @@ public class runnableCliente implements Runnable{
                             continue;
                         }
 
+                        // Recorre el hashmap para buscar registros del dominio con el tipo solicitado.
                         boolean encontrado = false;
                         for (Registro r : diccionario.get(dominio)) {
                             if (r.getTipo().equalsIgnoreCase(tipo)) {
@@ -87,25 +90,39 @@ public class runnableCliente implements Runnable{
                         String[] solicitud = partes[1].split("\\s+");
                         Registro registro = new Registro(solicitud[0], solicitud[1], solicitud[2]);
 
-                        if (!diccionario.containsKey(partes[0])) {
-                            diccionario.put(partes[0], new ArrayList<>());
-                            diccionario.get(partes[0]).add(registro);
+                        // Igual que en la clase ServidorDNS: si no existe el dominio se
+                        // crea la lista, si existe se añade el registro
+                        if (!diccionario.containsKey(solicitud[0])) {
+                            diccionario.put(solicitud[0], new ArrayList<>());
+                            diccionario.get(solicitud[0]).add(registro);
                             salida.println("200 record added");
                         } else {
-                            diccionario.get(partes[0]).add(registro);
+                            diccionario.get(solicitud[0]).add(registro);
                             salida.println("200 record added");
                         }
 
+                        // Error para cuando se mande un comando inválido.
                     } else {
                         salida.println("400 Bad Request");
                     }
 
+                    // Error del servidor al procesar una petición
                 } catch (Exception e) {
                     salida.println("500 Server Error");
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Error IO" + e.getMessage());
+        } finally {
+            //Cuando el cliente cierra la conexión, se decrementa el número de clientes
+            // activos y se cierra el socket por seguridad.
+            ServidorDNS.clientesActivos.decrementAndGet();
+            System.out.println("Cliente desconectado. Activos: " + ServidorDNS.clientesActivos.get());
+
+            try {
+                socketCliente.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 }
